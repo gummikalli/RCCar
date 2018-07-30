@@ -45,9 +45,11 @@ class AFMotorController:
     TimerInitialized = 0
 
     def __init__(self):
-        global TimerInitialized = False
+        TimerInitialized = 0
 
-    def enable():
+    def enable(self):
+        global latch_state
+        
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(18, GPIO.OUT)
         GPIO.setup(MOTORENABLE, GPIO.OUT)
@@ -56,11 +58,12 @@ class AFMotorController:
 
         latch_state = 0
 
-        latch_tx(); // reset
+        self.latch_tx(); #reset
 
-        GPIO.output(global MOTORENABLE, 0)
+        GPIO.output(MOTORENABLE, 0)
 
-    def latch_tx():
+    def latch_tx(self):
+        global latch_state
         
         GPIO.output(MOTORLATCH, 0)
         GPIO.output(MOTORDATA, 0)
@@ -68,7 +71,7 @@ class AFMotorController:
         for i in range(0, 7):
             GPIO.output(MOTORCLK, 0)
 
-            if testBit(global latch_state, 7 - i) > 0:
+            if testBit(latch_state, 7 - i) > 0:
                 GPIO.output(MOTORDATA, 1)
             else:
                 GPIO.output(MOTORDATA, 0)
@@ -85,23 +88,26 @@ class AF_DCMotor:
     pwmFreq = 0
     
     def __init__(self, num, freq):
-        global motornum = num
-        global pwmFreq = freq
+        motornum = num
+        pwmFreq = freq
+        global latch_state
 
-        global MC.enable()
+        MC.enable()
 
         if num == 1:
-            global latch_state &= ~testBit(global MOTOR1_A) & ~testBit(global MOTOR_B)
-            global MC.latch_tx()
-            initPWM1(freq)
+            latch_state &= ~(1 << MOTOR1_A) & ~(1 << MOTOR1_B)
+            MC.latch_tx()
+            self.initPWM1(freq)
 
             #TODO if num == 2, 3 and 4
 
-    def initPWM1(freq):
+    def initPWM1(self, freq):
         GPIO.setup(11, GPIO.OUT)
         GPIO.output(11, 0) #arduino 11 also, brown wire
             
         
-
+motor = AF_DCMotor(1, 9600)
+input("Hæ!")
+GPIO.cleanup()
         
         
