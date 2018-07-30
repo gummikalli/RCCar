@@ -38,6 +38,12 @@ MOTOR4_B = 6
 MOTOR3_A = 5
 MOTOR3_B = 7
 
+FORWARD = 1
+BACKWARD = 2
+BRAKE = 3
+RELEASE = 4
+
+
 latch_state = 0
 
 class AFMotorController:
@@ -104,6 +110,39 @@ class AF_DCMotor:
     def initPWM1(self, freq):
         GPIO.setup(11, GPIO.OUT)
         GPIO.output(11, 0) #arduino 11 also, brown wire
+
+    def setSpeed(self, speed):
+        if motornum == 1:
+            latch_tx()
+        #todo setPWM2, setPWM3, setPWM4
+
+    def run(cmd):
+
+        global motornum
+        global FORWARD
+        global BACKWARD
+        
+        a = 0
+        b = 0
+        if motornum == 1:
+            a = MOTOR1_A
+            b = MOTOR1_B
+            #todo MOTOR2, 3 and 4
+
+        if cmd == FORWARD:
+            latch_state |= 1 << a
+            latch_state &= ~(1 << b)
+            MC.latch_tx()
+        else if cmd == BACKWARD:
+            latch_state &= ~(1 << a)
+            latch_state != 1 << b
+            MC.latch_tx()
+        else:
+            latch_state &= ~(1 << a)
+            latch_state &= ~(1 << b)
+            MC.latch_tx()
+            
+        
             
         
 motor = AF_DCMotor(1, 9600)
