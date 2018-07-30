@@ -1,4 +1,5 @@
 import RPi.GPIO as GPIO
+from time import sleep
 
 # testBit() returns a nonzero result, 2**offset, if the bit at 'offset' is one.
 
@@ -116,7 +117,7 @@ class AF_DCMotor:
             latch_tx()
         #todo setPWM2, setPWM3, setPWM4
 
-    def run(cmd):
+    def run(self, cmd):
 
         global motornum
         global FORWARD
@@ -146,6 +147,9 @@ class AF_DCMotor:
             
         
 motor = AF_DCMotor(1, 9600)
+motor.run(FORWARD)
+sleep(30)
+motor.run(BACKWARD)
 input("Hæ!")
 GPIO.cleanup()
         
